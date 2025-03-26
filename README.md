@@ -1,8 +1,8 @@
-# FinChat
+# FinBOT
 
-FinChat is a financial assistant chatbot designed to empower users with real-time financial insights, document-based query responses, and general financial guidance. It offers four distinct interaction modes—General Queries, Chat with PDF, Chat with Live Data, and Chat with Live Voice—to cater to a variety of user needs. 
+FinBOT is a financial assistant chatbot designed to empower users with real-time financial insights, document-based query responses, and general financial guidance. It offers four distinct interaction modes—General Queries, Chat with PDF, Chat with Live Data, and Chat with Live Voice—to cater to a variety of user needs. 
 
-Leveraging cutting-edge AI technologies, vector databases, and scalable cloud deployment solutions like Docker and Kubernetes, FinChat delivers a robust, reliable, and user-friendly experience.
+Leveraging cutting-edge AI technologies, vector databases, and scalable cloud deployment solutions like Docker and Kubernetes, finBOT delivers a robust, reliable, and user-friendly experience.
 
 ## Features
 
@@ -84,7 +84,7 @@ Users can select from three distinct interaction modes via the sidebar:
 
    **Example:**
    ```text
-   User: "Hey FinChat, should I invest in Tesla right now?"
+   User: "Hey FinBOT, should I invest in Tesla right now?"
    Response (audio): "Tesla's stock is currently at $800 with a strong growth trajectory. Analysts suggest holding for long-term gains."
    ```
 
@@ -96,7 +96,7 @@ Users can select from three distinct interaction modes via the sidebar:
    **Example:**
    ```text
    User shows an invoice with multiple expenses.
-   FinChat: "Your total spending for this month is $2,500. Would you like a breakdown of discretionary vs. essential expenses?"
+   FinBOT: "Your total spending for this month is $2,500. Would you like a breakdown of discretionary vs. essential expenses?"
    ```
 
 3. **Screen Chat (Interactive Graph & Chart Analysis)**
@@ -107,7 +107,7 @@ Users can select from three distinct interaction modes via the sidebar:
    **Example:**
    ```text
    User shares a live stock market graph.
-   FinChat: "This chart indicates an upward trend in Apple’s stock. Would you like a comparative analysis against Microsoft?"
+   FinBOT: "This chart indicates an upward trend in Apple’s stock. Would you like a comparative analysis against Microsoft?"
    ```
 
 #### Processing:
@@ -118,9 +118,9 @@ Users can select from three distinct interaction modes via the sidebar:
 - The LLM generates responses in text and audio formats.
 - Text-to-speech converts the response back into audio for seamless interaction.
 
-With these three modes, FinChat offers an intuitive and accessible way to analyze financial information dynamically.
+With these three modes, FinBOT offers an intuitive and accessible way to analyze financial information dynamically.
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-FinChat--Live-blue?logo=github)](https://github.com/Bhaswanth67/FinChat_live)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-FinBOT--Live-blue?logo=github)](https://github.com/Bhaswanth67/finBOT_live)  - https://github.com/Bhaswanth67/finBOT_live
 
 
 ## Fallback Mechanism
@@ -144,8 +144,8 @@ pytest features/tests/test_api_tools.py
 
 **Build and Run:**
 ```bash
-docker build -t FinChat .
-docker run -p 8501:8501 FinChat
+docker build -t finbot .
+docker run -p 8501:8501 finbot
 ```
 
 ### Kubernetes
@@ -156,12 +156,19 @@ kubectl apply -f features/k8s_deployment.yaml
 ```
 
 ### Preview
+![FinBOT_UI](finBOT_UI.png)
+
+### Flowchart
+![Flowchart](flowchart.png)
+
+### Architecture Diagram
+![Architecture Diagram](architecture.png)
 
 
 ## Directory Structure
 
 ```text
-FinChat/
+FinBOT/
 ├── .streamlit/            # Streamlit settings
 ├── data/                  # Stored chat session metadata
 ├── features/
@@ -183,8 +190,8 @@ FinChat/
 
 Clone the repository:
 ```bash
-git clone https://github.com/yourusername/FinChat.git
-cd FinChat
+git clone https://github.com/yourusername/finbot.git
+cd finbot
 ```
 
 Install dependencies:
@@ -209,6 +216,58 @@ streamlit run app.py
 
 Access the interface at [http://localhost:8501](http://localhost:8501).
 
+## **Q&A Section**
+
+### 1. Why is the response time sometimes higher?  
+**Answer:** The response time can be higher because FinBOT uses multiple external services:
+
+- **LLM:** Google’s `gemini-2.0-flash-exp` for answering queries.
+- **Embeddings:** `all-MiniLM-L6-v2` from Hugging Face for vectorization.
+- **Vector Database:** Qdrant for storing and retrieving document embeddings.  
+
+Since these services operate on free-tier plans, they may introduce latency due to rate limits, network congestion, or load balancing delays.
+
+---
+
+### 2. Why didn’t you integrate the Chat with Voice mode directly into Streamlit?  
+**Answer:** The **Chat with Voice** mode requires camera access, screen sharing, and real-time voice processing. Streamlit does not natively support these features. Instead, I used an external frontend and backend tech stack to handle these functionalities. Additionally, WebSockets were integrated to enable real-time interactions between the user and FinBOT.
+https://github.com/Bhaswanth67/finBOT_live
+
+---
+
+### 3. Why did you create four separate modes? What is the benefit of this approach?  
+**Answer:**
+
+- Each mode is optimized for specific user needs.
+- **General Queries:** Best for text-based financial questions.
+- **Chat with PDF:** Allows users to interact with financial documents.
+- **Chat with Live Data:** Fetches real-time stock, crypto, and financial news updates.
+- **Chat with Live Voice:** Offers hands-free interaction via voice and camera.  
+
+This modular approach ensures a seamless user experience by selecting the best processing pipeline for each type of query.
+
+---
+
+### 4. You mentioned NewsAPI, Yahoo Finance, and other APIs. How does FinBOT decide which API to call?  
+**Answer:** FinBOT uses a **retriever agent** that analyzes the query type and routes it to the appropriate API:
+
+- If the query is about **stocks or financial markets**, it fetches data from **Yahoo Finance**.
+- If the query relates to **cryptocurrencies**, it uses **CoinGecko**.
+- If the query is about **financial news**, it retrieves data from **NewsAPI**.  
+
+The decision-making is handled through **keyword detection** and **intent classification**.
+
+---
+
+### 5. What is the role of the retrieval and synthesizer agents in FinBOT?  
+**Answer:**
+
+- **Retriever Agent:** Searches relevant data from vector databases (Qdrant) or external APIs. It ensures that responses are contextually accurate by fetching only the most relevant chunks of information.
+- **Synthesizer Agent:** Takes retrieved content and generates a coherent, well-structured response using the LLM. It ensures that the answer is meaningful and readable for the user.  
+
+Together, these agents ensure that FinBOT delivers precise and high-quality financial insights.
+
+
 ## Contributing
 
 1. Fork the repository.
@@ -225,4 +284,3 @@ Access the interface at [http://localhost:8501](http://localhost:8501).
    git push origin feature-name
    ```
 5. Submit a pull request.
-
